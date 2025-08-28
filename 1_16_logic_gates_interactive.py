@@ -8,6 +8,16 @@ class LogicGate:
     
     def get_output(self):
         return self.perform_gate_logic()
+    
+    def get_gate_from_user(self):
+        gate = int(input("\n1. NOT Gate\n2. AND Gate\n3. OR Gate\n\nEnter gate number based on list (e.g. 1 for NOT Gate): "))
+        gate_name = input("Enter gate name: ")
+        gate_map = {
+            1: NotGate(gate_name),
+            2: AndGate(gate_name),
+            3: OrGate(gate_name)
+        }
+        return gate_map[gate]
 
 
 class Connector:
@@ -32,7 +42,14 @@ class UnaryGate(LogicGate):
 
     def get_pin(self):
         if self.pin is None:
-            return int(input(f"Enter input for Gate {self.get_label()}: "))
+            print(f"\nSelect input mode for Gate {self.get_label()}:\n1. Connect a gate\n2. Enter input value")
+            input_mode = int(input("Enter your selection (1 or 2): "))
+            if input_mode == 1:
+                print(f"\nSelect gate for connecting to Gate {self.get_label()}: ")
+                gate = self.get_gate_from_user()
+                return gate.get_output()
+            if input_mode == 2:    
+                return int(input(f"\nEnter input for Gate {self.get_label()}: "))
         else:
             return self.pin.get_from().get_output()
 
@@ -52,13 +69,27 @@ class BinaryGate(LogicGate):
 
     def get_pin_a(self):
         if self.pin_a is None:
-            return int(input(f"Enter input for pin A of Gate {self.get_label()}: "))
+            print(f"\nSelect input mode for pin A of Gate {self.get_label()}:\n1. Connect a gate\n2. Enter input value")
+            input_mode = int(input("Enter your selection (1 or 2): "))
+            if input_mode == 1:
+                print(f"\nSelect gate for connecting to pin A of Gate {self.get_label()}: ")
+                gate = self.get_gate_from_user()
+                return gate.get_output()
+            if input_mode == 2:    
+                return int(input(f"\nEnter input for pin A of Gate {self.get_label()}: "))
         else:
             return self.pin_a.get_from().get_output()
         
     def get_pin_b(self):
         if self.pin_b is None:
-            return int(input(f"Enter input for pin B of Gate {self.get_label()}: "))
+            print(f"\nSelect input mode for pin B of Gate {self.get_label()}:\n1. Connect a gate\n2. Enter input value")
+            input_mode = int(input("Enter your selection (1 or 2): "))
+            if input_mode == 1:
+                print("\nSelect gate for connecting to pin B of Gate {self.get_label()}: ")
+                gate = self.get_gate_from_user()
+                return gate.get_output()
+            if input_mode == 2:    
+                return int(input(f"\nEnter input for pin B of Gate {self.get_label()}: "))
         else:
             return self.pin_b.get_from().get_output()
         
@@ -129,38 +160,16 @@ class NorGate(OrGate):
         else:
             return 1
 
-def get_gate_from_user():
-    gate = int(input("\n1. NOT Gate\n2. AND Gate\n3. OR Gate\n\nEnter gate number based on list (e.g. 1 for NOT Gate): "))
-    gate_name = input("Enter gate name: ")
-    gate_map = {
-        1: NotGate(gate_name),
-        2: AndGate(gate_name),
-        3: OrGate(gate_name)
-    }
-    return gate_map[gate]
 
 def main():
+    logic_gate = LogicGate("dummy")
     build = True
     print("Select output gate: ")
-    gate = get_gate_from_user()
-    while build:
-        build = True if int(input("\nSelect next action:\n1. Finish circuit\n2. Add gates\nEnter selection: ")) == 2 else False
-        if not build:
-            print("-"*50)
-            break
-        if isinstance(gate, BinaryGate):
-            print(f"\nSelect input for pin A of Gate {gate.get_label()}: ")
-            conn_pin_a = Connector(get_gate_from_user(), gate)
-            
-            print(f"\nSelect input for pin B of Gate {gate.get_label()}: ")
-            conn_pin_b = Connector(get_gate_from_user(), gate)
-        else:
-            print(f"\nSelect input for Gate {gate.get_label()}: ")
-            conn_pin = Connector(get_gate_from_user(), gate)
-
+    gate = logic_gate.get_gate_from_user()
     output = gate.get_output()
     print("-"*50)
-    print(f"\nOutput: {output}")
+    print(f"Output: {output}")
+    print("-"*50)
         
 if __name__ == "__main__":
     main()
